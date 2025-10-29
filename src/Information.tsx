@@ -60,13 +60,17 @@ const Information = () => {
               THÔNG TIN ĐƠN HÀNG
             </p>
             <div className="flex items-center w-[90%] lg:w-full lg:justify-between">
-              <img src="./deal7.png" alt="" />
+              <div className="w-[90%]">
+                <img src="./deal7.png" alt="" />
+              </div>
               <p className="text-[#EE6E24] font-bold 2xl:text-5xl ml-2">
                 x{getItemCount(1)}
               </p>
             </div>
             <div className="flex items-center w-[90%] lg:w-full lg:justify-between">
-              <img src="./deal5.png" alt="" />
+              <div className="w-[90%]">
+                <img src="./deal5.png" alt="" />
+              </div>
               <p className="text-[#EE6E24] font-bold 2xl:text-5xl ml-2">
                 x{getItemCount(2)}
               </p>
