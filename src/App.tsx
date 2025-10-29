@@ -17,7 +17,8 @@ function App() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPhone, setIsPhone] = useState("");
-  const [banner, setBanner] = useState("./heading.png");
+  const [heading, setHeading] = useState("./heading.png");
+  const [banner, setBanner] = useState("./banner.png");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const debounceRef: any = useRef(null);
@@ -59,6 +60,15 @@ function App() {
           console.log(isPhone);
 
           setIsLoading(false);
+          localStorage.setItem(
+            "formData",
+            JSON.stringify({
+              phone: value,
+              address: "123 Đường ABC, Quận 1, TP.HCM",
+              owner: "Nguyễn Văn A",
+              nameStore: "Nhà thuốc ABC",
+            })
+          );
         }, 1500);
       } else {
         setIsPhone("");
@@ -68,6 +78,7 @@ function App() {
           owner: "",
           nameStore: "",
         }));
+        localStorage.clear()
       }
     }, 500);
   };
@@ -122,18 +133,27 @@ function App() {
     }
   };
 
+
   useEffect(() => {
-    setBanner(detectMobile ? "./heading-mobile.png" : "./heading.png");
+    const savedData = localStorage.getItem("formData");
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      setFormData(parsedData);
+      if (parsedData.phone) setIsPhone(parsedData.phone);
+    }
+
+    setHeading(detectMobile ? "./heading-mobile.png" : "./heading.png");
+    setBanner(detectMobile ? "./banner-mobile.png" : "./banner.png");
   }, []);
 
   return (
     <>
       {isLoading ? <Loading /> : <></>}
-      <div className="w-screen h-screen overflow-x-hidden flex flex-col gap-8 items-center scroll-smooth relative box-border">
-        <header className="w-full flex flex-col gap-4 items-center justify-center">
-          <img src={banner} alt="" className="w-full" draggable={false} />
+      <div className="w-screen h-screen overflow-x-hidden flex flex-col gap-4 items-center scroll-smooth relative box-border">
+        <header className="w-full flex flex-col gap-2 items-center justify-center">
+          <img src={heading} alt="" className="w-full" draggable={false} />
           <img
-            src="./banner.png"
+            src={banner}
             alt=""
             className="w-[98%]"
             draggable={false}
@@ -187,6 +207,11 @@ function App() {
                   disabled
                 />
               </div>
+              {!isPhone && (
+                <p className="text-sm text-red-500 font-bold">
+                  *Bạn chưa nhập số điện thoại
+                </p>
+              )}
             </div>
             <div className="col-span-1 flex flex-col gap-2 items-center justify-center">
               <label
@@ -208,6 +233,11 @@ function App() {
                   disabled
                 />
               </div>
+              {!isPhone && (
+                <p className="text-sm text-red-500 font-bold">
+                  *Bạn chưa nhập số điện thoại
+                </p>
+              )}
             </div>
             <div className="col-span-1 flex flex-col gap-2 items-center justify-center">
               <label
@@ -229,6 +259,11 @@ function App() {
                   disabled
                 />
               </div>
+              {!isPhone && (
+                <p className="text-sm text-red-500 font-bold">
+                  *Bạn chưa nhập số điện thoại
+                </p>
+              )}
             </div>
           </div>
           <p className="w-full text-justify text-sm lg:text-base lg:w-[92%] lg:text-center mt-4 text-[#F47920] font-bold">
@@ -237,20 +272,20 @@ function App() {
           </p>
         </section>
 
-        <section className="w-4/5 grid grid-cols-2 gap-10 lg:grid-cols-2 2xl:gap-40">
+        <section className="w-4/5 grid grid-cols-1 gap-10 lg:grid-cols-2 2xl:gap-40">
           <div className="col-span-1 flex flex-col gap-4">
             <img src="./deal-1.png" alt="" className="w-full" />
             <p className="text-[#EE6E24] text-sm lg:text-base font-bold">
               *Tối đa 3 đơn hàng
             </p>
-            <div className="flex flex-col gap-4 lg:flex-row lg:gap-0 items-center">
+            <div className="flex lg:gap-0 items-center">
               <button
                 onClick={() => handleAddToCart(1)}
                 className="shadow-[inset_0px_4px_4px_0px_rgba(255,_255,_255,_0.41)] bg-[#EE6E24] py-3 px-3 text-sm text-nowrap lg:text-base rounded-xl text-white font-bold cursor-pointer hover:bg-[#ff5100] hover:scale-105 transition-all"
               >
                 Thêm vào giỏ hàng
               </button>
-              <button className="ml-4 hidden lg:block hover:scale-110 transition-all">
+              <button className="ml-2 lg:ml-4  lg:block hover:scale-110 transition-all">
                 <img src="./icons/cart.svg" alt="" className="w-3/6 lg:w-4/6" />
               </button>
               <p className="text-[#F47920] lg:text-lg uppercase font-bold">
@@ -263,14 +298,14 @@ function App() {
             <p className="text-[#EE6E24] text-sm lg:text-base  font-bold">
               *Tối đa 3 đơn hàng
             </p>
-            <div className="flex flex-col gap-4 lg:flex-row lg:gap-0 items-center">
+            <div className="flex  gap-0 items-center">
               <button
                 onClick={() => handleAddToCart(2)}
                 className="shadow-[inset_0px_4px_4px_0px_rgba(255,_255,_255,_0.41)] bg-[#EE6E24] py-3 px-3 text-sm text-nowrap lg:text-base rounded-xl text-white font-bold cursor-pointer hover:bg-[#ff5100] hover:scale-105 transition-all"
               >
                 Thêm vào giỏ hàng
               </button>
-              <button className="ml-4 hidden lg:block hover:scale-110 transition-all">
+              <button className="ml-2 lg:ml-4 lg:block hover:scale-110 transition-all">
                 <img src="./icons/cart.svg" alt="" className="w-3/6 lg:w-4/6" />
               </button>
               <p className="text-[#F47920] lg:text-lg uppercase font-bold">
@@ -280,7 +315,7 @@ function App() {
           </div>
         </section>
         <section className="min-h-[10vh]"></section>
-        <div className="fixed bottom-0 flex items-center justify-around bg-[#FFE8CD] border-t-3 border-l-3 border-r-3 border-white 2xl:w-2/6 w-[95%] lg:w-4/6 rounded-t-lg 2xl:py-4 py-4 2xl:px-8 px-2 shadow-[-3px_4px_5.7px_0px_rgba(0,_0,_0,_0.25)]">
+        <div className="fixed bottom-0 flex items-center justify-around bg-[#FFE8CD] lg:border-t-3 lg:border-l-3 lg:border-r-3 border-white 2xl:w-2/6 w-full border-0 lg:w-4/6 rounded-t-lg 2xl:py-4 py-4 2xl:px-8 px-2 shadow-[-3px_4px_5.7px_0px_rgba(0,_0,_0,_0.25)]">
           <div className="relative w-1/10">
             <img src="./icons/bag.svg" alt="" className="w-full" />
             <div className="cursor-default flex items-center justify-center text-[.6rem] text-center p-0 bg-red-600 rounded-[50%] w-[20px] h-[20px] text-white font-bold absolute -top-[45%] -right-[45%] lg:-top-[20%] lg:-right-[25%]">

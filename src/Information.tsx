@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Loading from "./components/loading";
+import { isMobile as detectMobile } from "react-device-detect";
 
 interface LocationState {
   cart: number[];
@@ -14,6 +15,7 @@ const Information = () => {
   const state = location.state as LocationState | undefined;
   const cart = state?.cart || [];
   const [isLoading, setIsLoading] = useState(false);
+  const [footer, setFooter] = useState("./footer.png");
 
   const getItemCount = (item: number) => {
     return cart.filter((i) => i === item).length;
@@ -41,6 +43,10 @@ const Information = () => {
     }, 1000);
   };
 
+  useEffect(() => {
+    setFooter(detectMobile ? "./footer-mobile.png" : "./footer.png");
+  }, []);
+
   return (
     <>
       {isLoading && <Loading />}
@@ -54,15 +60,15 @@ const Information = () => {
               THÔNG TIN ĐƠN HÀNG
             </p>
             <div className="flex items-center w-[90%] lg:w-full lg:justify-between">
-              <img src="./deal5.png" alt="" />
-              <p className="text-[#EE6E24] font-bold 2xl:text-5xl ml-2">
-                x{getItemCount(2)}
-              </p>
-            </div>
-            <div className="flex items-center w-[90%] lg:w-full lg:justify-between">
               <img src="./deal7.png" alt="" />
               <p className="text-[#EE6E24] font-bold 2xl:text-5xl ml-2">
                 x{getItemCount(1)}
+              </p>
+            </div>
+            <div className="flex items-center w-[90%] lg:w-full lg:justify-between">
+              <img src="./deal5.png" alt="" />
+              <p className="text-[#EE6E24] font-bold 2xl:text-5xl ml-2">
+                x{getItemCount(2)}
               </p>
             </div>
           </div>
@@ -95,7 +101,7 @@ const Information = () => {
           </button>
         </div>
         <section>
-          <img src="./footer.png" alt="" />
+          <img src={footer} alt="" />
         </section>
       </div>
     </>
