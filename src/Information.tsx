@@ -59,15 +59,15 @@ const Information = () => {
             <p className="text-[#EE6E24] font-bold text-2xl">
               THÔNG TIN ĐƠN HÀNG
             </p>
-            <div className="flex items-center w-[90%] lg:w-full lg:justify-between">
+            <div className="flex items-center w-full lg:w-full lg:justify-between box-border">
               <div className="w-[90%]">
                 <img src="./deal7.png" alt="" />
               </div>
-              <p className="text-[#EE6E24] font-bold 2xl:text-5xl ml-2">
+              <p className="text-[#EE6E24] font-bold text-2xl 2xl:text-5xl ml-2">
                 x{getItemCount(1)}
               </p>
             </div>
-            <div className="flex items-center w-[90%] lg:w-full lg:justify-between">
+            <div className="flex items-center w-full lg:w-full text-2xl lg:justify-between box-border">
               <div className="w-[90%]">
                 <img src="./deal5.png" alt="" />
               </div>
