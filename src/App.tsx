@@ -78,7 +78,7 @@ function App() {
           owner: "",
           nameStore: "",
         }));
-        localStorage.clear()
+        localStorage.clear();
       }
     }, 500);
   };
@@ -133,7 +133,6 @@ function App() {
     }
   };
 
-
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
     if (savedData) {
@@ -186,6 +185,7 @@ function App() {
                   disabled={isLoading}
                 />
               </div>
+              {!isPhone && <p className="text-sm text-red-500 font-bold"><br className="hidden lg:block" /></p>}
             </div>
             <div className="col-span-1 flex flex-col gap-2 items-center justify-center lg:mb-4">
               <label
@@ -218,7 +218,7 @@ function App() {
                 htmlFor="owner"
                 className="text-[#F47920] lg:text-lg uppercase font-bold"
               >
-                CHỦ NHÀ THUỐC
+                NGƯỜI LIÊN HỆ
               </label>
               <div className="w-7/8 lg:w-6/8 bg-white py-2 lg:py-4 px-8 rounded-xl shadow-[0px_4px_4px_0px_rgba(0,_0,_0,_0.25)]">
                 <input
