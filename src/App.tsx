@@ -6,6 +6,8 @@ import { isMobile as detectMobile } from "react-device-detect";
 import Loading from "./components/loading";
 
 function App() {
+  const apiLink = import.meta.env.VITE_API_LINK;
+
   const [formData, setFormData] = useState({
     phone: "",
     address: "",
@@ -14,6 +16,9 @@ function App() {
   });
 
   const [cart, setCart] = useState<number[]>([]);
+  const addressRef = useRef<HTMLTextAreaElement>(null);
+  const nameStoreRef = useRef<HTMLTextAreaElement>(null);
+  const ownerRef = useRef<HTMLTextAreaElement>(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPhone, setIsPhone] = useState("");
@@ -45,31 +50,63 @@ function App() {
         setIsLoading(true);
         toast.loading("Đang tra cứu thông tin...", { id: "loading" });
 
-        setTimeout(() => {
-          toast.dismiss("loading");
-          toast.success("Lấy thông tin thành công!");
+        const getData = async () => {
+          try {
+            const formGetData = new FormData();
 
-          setFormData({
-            phone: value,
-            address: "123 Đường ABC, Quận 1, TP.HCM",
-            owner: "Nguyễn Văn A",
-            nameStore: "Nhà thuốc ABC",
-          });
+            formGetData.append("Procedure", "Selsun_Select");
+            formGetData.append(
+              "Parameters",
+              JSON.stringify({
+                Phone: `${value}`,
+              })
+            );
 
-          setIsPhone(value);
-          console.log(isPhone);
+            const response = await fetch(apiLink, {
+              method: "POST",
+              body: formGetData,
+            });
 
-          setIsLoading(false);
-          localStorage.setItem(
-            "formData",
-            JSON.stringify({
+            if (!response.ok) {
+              throw new Error("API request failed");
+            }
+
+            const result = await response.json();
+            const raw = result.Objects[0].Data;
+            const obj = JSON.parse(raw);
+            toast.dismiss("loading");
+            toast.success("Lấy thông tin thành công!");
+
+            setFormData({
               phone: value,
-              address: "123 Đường ABC, Quận 1, TP.HCM",
-              owner: "Nguyễn Văn A",
-              nameStore: "Nhà thuốc ABC",
-            })
-          );
-        }, 1500);
+              address: obj[0].address,
+              owner: obj[0].contact,
+              nameStore: obj[0].phar_name,
+            });
+
+            setIsPhone(value);
+            console.log(isPhone);
+
+            setIsLoading(false);
+            localStorage.setItem(
+              "formData",
+              JSON.stringify({
+                phone: value,
+                address: obj[0].address,
+                owner: obj[0].contact,
+                nameStore: obj[0].phar_name,
+              })
+            );
+          } catch (error) {
+            if (error instanceof Error) {
+              console.error("Error:", error.message);
+            } else {
+              console.error("Unknown error:", error);
+            }
+          }
+        };
+
+        getData();
       } else {
         setIsPhone("");
         setFormData((prev) => ({
@@ -145,6 +182,22 @@ function App() {
     setBanner(detectMobile ? "./banner-mobile.png" : "./banner.png");
   }, []);
 
+  useEffect(() => {
+    if (addressRef.current) {
+      addressRef.current.style.height = "auto"; 
+      addressRef.current.style.height = addressRef.current.scrollHeight + "px"; 
+    }
+    if (nameStoreRef.current) {
+      nameStoreRef.current.style.height = "auto";
+      nameStoreRef.current.style.height =
+        nameStoreRef.current.scrollHeight + "px"; 
+    }
+    if (ownerRef.current) {
+      ownerRef.current.style.height = "auto";
+      ownerRef.current.style.height = ownerRef.current.scrollHeight + "px"; 
+    }
+  }, [formData.address, formData.nameStore, formData.owner]);
+
   return (
     <>
       {isLoading ? <Loading /> : <></>}
@@ -185,7 +238,11 @@ function App() {
                   disabled={isLoading}
                 />
               </div>
-              {!isPhone && <p className="text-sm text-red-500 font-bold"><br className="hidden lg:block" /></p>}
+              {!isPhone && (
+                <p className="text-sm text-red-500 font-bold">
+                  <br className="hidden lg:block" />
+                </p>
+              )}
             </div>
             <div className="col-span-1 flex flex-col gap-2 items-center justify-center lg:mb-4">
               <label
@@ -195,16 +252,16 @@ function App() {
                 ĐỊA CHỈ NHÀ THUỐC
               </label>
               <div className="w-7/8 lg:w-6/8 bg-white py-2 lg:py-4 px-8 rounded-xl shadow-[0px_4px_4px_0px_rgba(0,_0,_0,_0.25)]">
-                <input
-                  type="text"
+                <textarea
                   id="address-input"
-                  className="block text-center pe-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-[#FF6004] peer"
-                  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                  className="hide-scrollbar block w-full text-center text-sm text-gray-900 bg-transparent border-0 border-b-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-[#FF6004] peer resize-none"
                   placeholder=""
                   name="address"
                   value={formData.address}
                   readOnly
                   disabled
+                  rows={1}
+                  ref={addressRef}
                 />
               </div>
               {!isPhone && (
@@ -221,16 +278,16 @@ function App() {
                 NGƯỜI LIÊN HỆ
               </label>
               <div className="w-7/8 lg:w-6/8 bg-white py-2 lg:py-4 px-8 rounded-xl shadow-[0px_4px_4px_0px_rgba(0,_0,_0,_0.25)]">
-                <input
-                  type="text"
+                <textarea
                   id="owner-input"
-                  className="block text-center pe-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-[#FF6004] peer"
-                  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                  className="hide-scrollbar block w-full text-center text-sm text-gray-900 bg-transparent border-0 border-b-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-[#FF6004] peer resize-none"
                   placeholder=""
                   name="owner"
                   value={formData.owner}
                   readOnly
                   disabled
+                  rows={1}
+                  ref={ownerRef}
                 />
               </div>
               {!isPhone && (
@@ -247,16 +304,16 @@ function App() {
                 TÊN NHÀ THUỐC
               </label>
               <div className="w-7/8 lg:w-6/8 bg-white py-2 lg:py-4  px-8 rounded-xl shadow-[0px_4px_4px_0px_rgba(0,_0,_0,_0.25)]">
-                <input
-                  type="text"
+                <textarea
                   id="name-store-input"
-                  className="block text-center pe-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-[#FF6004] peer"
-                  pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                  className="hide-scrollbar block w-full text-center text-sm text-gray-900 bg-transparent border-0 border-b-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-[#FF6004] peer resize-none"
                   placeholder=""
                   name="name-store"
                   value={formData.nameStore}
                   readOnly
                   disabled
+                  rows={1} // chiều cao ban đầu
+                  ref={nameStoreRef}
                 />
               </div>
               {!isPhone && (
